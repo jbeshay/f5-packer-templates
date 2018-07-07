@@ -5,7 +5,9 @@
   "builders": [
     {
       "name": "{{ user `F5_NAME` }}",
-      "type": "virtualbox-iso",
+      "type": "qemu",
+      "format": "qcow2",
+      "accelerator": "kvm",
       "iso_url": "software/{{ user `F5_NAME` }}.iso",
       "iso_checksum": "598a64b925da5ff8fcafe9174e9c8fc7",
       "iso_checksum_type": "md5",
@@ -14,7 +16,6 @@
       "ssh_wait_timeout": "30000s",
       "headless": "false",
       "shutdown_command": "shutdown -h now",
-      "guest_additions_mode": "disable",
       "guest_os_type": "Linux_64",
       "vm_name": "{{ user `F5_NAME` }}",
       "boot_wait": "60s",
@@ -24,12 +25,11 @@
         "<enter>"
       ],
       "disk_size": "160000",
-      "format": "ovf",
-      "vboxmanage": [
-        ["modifyvm","{{.Name}}","--memory","4096"],
-        ["modifyvm","{{.Name}}","--cpus","2"],
-        ["modifyvm","{{.Name}}","--nic1","NAT"],
-        ["modifyvm","{{.Name}}","--boot1","disk"]
+      "qemuargs": [
+        ["-m","4096"],
+        ["-smp","2"],
+        ["-netdev", "user,id=vmnic", "-device", "virtio-net,netdev=vmnic"],
+        ["-boot","order=c"]
       ]
     }
   ],
