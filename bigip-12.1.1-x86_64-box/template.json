@@ -14,9 +14,7 @@
       "ssh_username": "root",
       "ssh_password": "default",
       "ssh_wait_timeout": "30000s",
-      "headless": "false",
       "shutdown_command": "shutdown -h now",
-      "guest_os_type": "Linux_64",
       "vm_name": "{{ user `F5_NAME` }}",
       "boot_wait": "60s",
       "boot_command": [
@@ -28,7 +26,8 @@
       "qemuargs": [
         ["-m","4096"],
         ["-smp","2"],
-        ["-netdev", "user,id=vmnic", "-device", "virtio-net,netdev=vmnic"],
+        ["-netdev", "user,id=vmnic"],
+        ["-device", "virtio-net,netdev=vmnic"],
         ["-boot","order=c"]
       ]
     }
