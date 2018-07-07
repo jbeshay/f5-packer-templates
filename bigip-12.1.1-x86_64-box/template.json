@@ -26,8 +26,6 @@
       "qemuargs": [
         ["-m","4096"],
         ["-smp","2"],
-        ["-netdev", "user,id=vmnic"],
-        ["-device", "virtio-net,netdev=vmnic"],
         ["-boot","order=c"]
       ]
     }
