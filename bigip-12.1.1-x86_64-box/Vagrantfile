@@ -1,0 +1,61 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+WAIT_FOR_BIGIP = <<SHELL
+for retries in {1..100} ; do
+    tmsh modify sys dns name-servers replace-all-with { 192.168.121.1 }
+    # Retry until mcpd completes startup
+    tmsh -a show sys mcp-state field-fmt 2>/dev/null | grep phase | grep running
+    rc=$?
+    if [ $rc -eq 0 ]; then break ; fi
+    sleep 30
+done
+
+if [ $rc -ne 0 ]; then
+    /usr/bin/tmsh -a show sys mcp-state field-fmt
+fi
+echo "Runlevel is now valid, kicking off provisioning..."
+sleep 5
+SHELL
+
+
+Vagrant.configure("2") do |config|
+  config.vm.define "big-ip01.internal" do |v|
+    v.vm.box = "jbeshay/BIGIP-12.1.1.0.0.184"
+
+    v.vm.network :private_network, 
+      :ip => "10.2.2.2", 
+      :auto_config => false,
+      :libvirt__forward_mode => "route"
+
+    v.vm.network :private_network,
+      :ip => "10.2.3.2", 
+      :auto_config => false,
+      :libvirt__forward_mode => "route"
+
+    v.vm.provider :libvirt do |libvirt|
+      libvirt.cpus = 2
+      libvirt.memory = 4096
+      libvirt.graphics_type = "vnc"
+      libvirt.graphics_ip = "0.0.0.0"
+    end
+
+    v.vm.provision "shell", inline: <<-SHELL
+      #{WAIT_FOR_BIGIP}
+
+      tmsh load /sys config default
+      sleep 10
+      /usr/local/bin/SOAPLicenseClient --basekey <LICENSE_KEY_HERE>
+      sleep 10
+
+      #{WAIT_FOR_BIGIP}
+
+      tmsh modify sys db setup.run value false
+      tmsh create net vlan net1 interfaces add { 1.1 }
+      tmsh create net self net1 address 10.2.2.2/255.255.255.0 vlan net1
+      tmsh create net vlan net2 interfaces add { 1.2 }
+      tmsh create net self net2 address 10.2.3.2/255.255.255.0 vlan net2
+      tmsh save sys config      
+     SHELL
+  end
+end

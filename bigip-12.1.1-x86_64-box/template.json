@@ -22,7 +22,7 @@
         "<enter><wait5>",
         "<enter>"
       ],
-      "disk_size": "160000",
+      "disk_size": "16000",
       "qemuargs": [
         ["-m","4096"],
         ["-smp","2"],
