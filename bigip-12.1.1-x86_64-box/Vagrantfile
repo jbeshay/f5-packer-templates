@@ -21,7 +21,8 @@ SHELL
 
 Vagrant.configure("2") do |config|
   config.vm.define "big-ip01.internal" do |v|
-    v.vm.box = "jbeshay/BIGIP-12.1.1.0.0.184"
+    v.vm.box = "jbeshay/BIGIP_12.1.1"
+    v.vm.box_version = "1"
 
     v.vm.network :private_network, 
       :ip => "10.2.2.2", 
