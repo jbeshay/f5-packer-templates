@@ -46,8 +46,8 @@ Vagrant.configure("2") do |config|
 
       tmsh load /sys config default
       sleep 10
-      /usr/local/bin/SOAPLicenseClient --basekey <LICENSE_KEY_HERE>
-      sleep 10
+      #/usr/local/bin/SOAPLicenseClient --basekey <LICENSE_KEY_HERE>
+      #sleep 10
 
       #{WAIT_FOR_BIGIP}
 

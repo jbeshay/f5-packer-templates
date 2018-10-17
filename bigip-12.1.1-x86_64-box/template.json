@@ -14,7 +14,7 @@
       "ssh_username": "root",
       "ssh_password": "default",
       "ssh_wait_timeout": "30000s",
-      "shutdown_command": "shutdown -h now",
+      "shutdown_command": "shutdown -h -g0 /",
       "vm_name": "{{ user `F5_NAME` }}",
       "boot_wait": "60s",
       "boot_command": [
@@ -55,7 +55,8 @@
       "type": "shell",
       "scripts": [
         "scripts/filesystem-rw.sh",
-        "scripts/sudo.sh"
+        "scripts/sudo.sh",
+	"scripts/reset-device-id.sh"
       ]
     },
     {
